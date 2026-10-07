@@ -122,9 +122,11 @@ Ces règles viennent de Guillaume et sont portées par les consignes des nœuds 
 - **Dans `app.py`, le graphe est gardé par `st.cache_resource`** : Streamlit relit le
   script à chaque interaction, et un graphe réassemblé perdrait la mémoire des
   conversations. Enregistrer un document vide ce cache, donc toutes les conversations.
-- **Le volet de dépôt de `app.py` est visible par tout visiteur** : n'importe qui peut
-  remplacer le CV ou déclencher un ingest facturé. À réserver à Guillaume avant la mise
-  en ligne ; le mot de passe d'accès à l'application reste lui aussi à faire.
+- **`app.py` demande deux mots de passe** (`_password_is_given`) : `APP_PASSWORD` ouvre la
+  page aux recruteurs, `ADMIN_PASSWORD` ouvre le volet de dépôt à Guillaume seul. Ce qu'une
+  variable absente protège reste fermé. Sur Fly.io, elles passent par `fly secrets`, comme
+  la clé. Tout nouvel élément qui modifie les documents ou déclenche un ingest doit rester
+  derrière `ADMIN_PASSWORD`.
 - **Ajouter un ouvrage dans l'interface réindexe tous les ouvrages** : `ingest_documents`
   traite les dossiers entiers, pas le seul fichier déposé.
 - **Le fichier `.env` est lu dans le dossier courant**, comme les chemins `data/` par

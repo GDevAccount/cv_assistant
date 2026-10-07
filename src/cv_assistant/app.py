@@ -7,6 +7,8 @@ Se lance depuis la racine du projet :
 
 from __future__ import annotations
 
+import hmac
+import os
 from contextlib import ExitStack
 from pathlib import Path
 from uuid import uuid4
@@ -42,6 +44,31 @@ def _open_assistant() -> tuple[CompiledStateGraph, ExitStack]:
     stack = ExitStack()
     collection = stack.enter_context(open_collection(CHROMA_DIR))
     return build_graph(cv_text, Retriever(collection), Llm()), stack
+
+
+def _password_is_given(variable: str) -> bool:
+    """Demande le mot de passe rangé dans `variable`, une fois par session du navigateur.
+
+    APP_PASSWORD ouvre la page, ADMIN_PASSWORD le volet de dépôt des documents.
+    """
+    if st.session_state.get(variable):
+        return True
+
+    expected = os.environ.get(variable)
+    if not expected:
+        # Sans mot de passe défini, l'accès reste fermé plutôt qu'ouvert à tous.
+        st.error(f"La variable {variable} est absente : ajoutez-la au fichier .env.")
+        return False
+
+    with st.form(f"form_{variable}"):
+        password = st.text_input("Mot de passe", type="password")
+        submitted = st.form_submit_button("Entrer")
+    if submitted:
+        if hmac.compare_digest(password.encode(), expected.encode()):
+            st.session_state[variable] = True
+            st.rerun()
+        st.error("Mot de passe incorrect.")
+    return False
 
 
 def _start_conversation() -> None:
@@ -86,7 +113,14 @@ def _save_documents(cv_file, book_files) -> None:
 
 def _show_sidebar() -> None:
     with st.sidebar:
+        if st.button("Nouvelle conversation"):
+            _start_conversation()
+
         st.header("Documents")
+        st.caption("Réservé à Guillaume.")
+        if not _password_is_given("ADMIN_PASSWORD"):
+            return
+
         with st.form("documents", clear_on_submit=True):
             cv_file = st.file_uploader("CV (PDF)", type="pdf")
             book_files = st.file_uploader(
@@ -115,14 +149,13 @@ def _show_sidebar() -> None:
         for book in books:
             st.caption(book)
 
-        if st.button("Nouvelle conversation"):
-            _start_conversation()
-
 
 def main() -> None:
     st.set_page_config(page_title="Assistant d'entretien — Guillaume Legall", page_icon="💬")
     # Les variables déjà définies dans l'environnement priment sur celles du fichier .env.
     load_dotenv(Path(".env"))
+    if not _password_is_given("APP_PASSWORD"):
+        return
     if "thread_id" not in st.session_state:
         _start_conversation()
 
