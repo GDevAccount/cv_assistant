@@ -1,0 +1,25 @@
+[project]
+name = "cv-assistant"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Guillaume", email = "legall.guilla@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "chromadb>=1.5.9",
+    "langchain>=1.4.3",
+    "langgraph>=1.2.14",
+    "openai>=3.25.0",
+    "pypdf>=6.0.0",
+    "python-dotenv>=1.2.4",
+    "streamlit>=1.65.0",
+]
+
+[project.scripts]
+cv-assistant = "cv_assistant.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.17,<0.13.0"]
+build-backend = "uv_build"

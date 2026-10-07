@@ -1,0 +1,20 @@
+# Tout ce qui n'est pas nécessaire à l'image, et surtout ce qui ne doit jamais y entrer :
+# la clé d'API, le CV, les ouvrages et la base ChromaDB.
+.env
+data/
+
+.git
+.gitignore
+.venv
+.claude
+__pycache__/
+*.py[oc]
+build/
+dist/
+*.egg-info
+
+tests/
+docs/
+CLAUDE.md
+Dockerfile
+.dockerignore

@@ -1,0 +1,22 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Local secrets
+.env
+
+# Local documents and the persistent vector database
+/data/chroma/
+/data/pdfs/*
+!/data/pdfs/.gitkeep
+/data/epubs/*
+!/data/epubs/.gitkeep
+/data/cv/*
+!/data/cv/.gitkeep
